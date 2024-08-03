@@ -1,35 +1,21 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\CiudadanoHijosResource\RelationManagers;
 
-use App\Filament\Resources\CiudadanoHijosResource\RelationManagers\HijosRelationManager;
-use App\Filament\Resources\CiudadanoResource\Pages;
-use App\Filament\Resources\CiudadanoResource\RelationManagers;
-use App\Models\Ciudadano;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class CiudadanoResource extends Resource
+class HijosRelationManager extends RelationManager
 {
-    protected static ?string $model = Ciudadano::class;
+    protected static string $relationship = 'hijos';
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationBadgeTooltip = 'El número de ciudadanos';
-
-
-
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -98,13 +84,13 @@ class CiudadanoResource extends Resource
                     ->preload()
                     ->getOptionLabelFromRecordUsing(fn($record) => "{$record->nombre} {$record->apellido_paterno} {$record->apellido_materno}")
                     ->default(null)
-
             ])->columns(4);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('nombre')
                     ->searchable(),
@@ -142,9 +128,12 @@ class CiudadanoResource extends Resource
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -152,21 +141,5 @@ class CiudadanoResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            HijosRelationManager::class
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListCiudadanos::route('/'),
-            'create' => Pages\CreateCiudadano::route('/create'),
-            'edit' => Pages\EditCiudadano::route('/{record}/edit'),
-        ];
     }
 }

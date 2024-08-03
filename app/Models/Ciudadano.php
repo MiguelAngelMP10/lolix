@@ -30,10 +30,11 @@ class Ciudadano extends Model
 
     public function hijos(): HasMany
     {
-        return $this->hasMany(Ciudadano::class, 'padre_id')
-            ->orHas('madre', function ($query) {
-                $query->where('padre_id', $this->id);
-            });
+        if ($this->sexo == 'F') {
+            return $this->hasMany(Ciudadano::class, 'madre_id');
+        } else {
+            return $this->hasMany(Ciudadano::class, 'padre_id');
+        }
     }
 
     public function localidad(): BelongsTo
