@@ -22,4 +22,6 @@ class ListProgramaSocials extends ListRecords
     {
         return MaxWidth::Full;
     }
+    protected ?string $heading = 'Programas Sociales';
+    protected static ?string $title = 'Programas Sociales';
 }

@@ -124,7 +124,8 @@ class CiudadanosRelationManager extends RelationManager
                     ->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
+                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

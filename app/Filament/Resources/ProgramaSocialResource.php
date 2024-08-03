@@ -7,7 +7,9 @@ use App\Filament\Resources\ProgramaSocialResource\RelationManagers;
 use App\Models\ProgramaSocial;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,6 +20,15 @@ class ProgramaSocialResource extends Resource
     protected static ?string $model = ProgramaSocial::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Programas Sociales';
+    protected static ?string $navigationBadgeTooltip = 'El número de programas sociales';
+    protected static ?string $slug = "programas-sociales";
+    protected static ?string $breadcrumb = 'Programas Sociales';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -50,7 +61,9 @@ class ProgramaSocialResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -9,6 +9,7 @@ use App\Models\Localidad;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,6 +20,17 @@ class LocalidadResource extends Resource
     protected static ?string $model = Localidad::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Localidades';
+    protected static ?string $navigationBadgeTooltip = 'El número de localidades';
+    protected static ?string $slug = "localidades";
+
+    protected static ?string $breadcrumb='Localidades';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
 
     public static function form(Form $form): Form
     {
@@ -51,7 +63,9 @@ class LocalidadResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

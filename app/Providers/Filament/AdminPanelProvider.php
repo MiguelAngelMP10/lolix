@@ -56,6 +56,6 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('images/logo.png'))
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])->sidebarCollapsibleOnDesktop();
     }
 }

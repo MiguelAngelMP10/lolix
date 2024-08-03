@@ -11,6 +11,9 @@ class ListLocalidads extends ListRecords
 {
     protected static string $resource = LocalidadResource::class;
 
+
+
+
     protected function getHeaderActions(): array
     {
         return [
@@ -22,4 +25,8 @@ class ListLocalidads extends ListRecords
     {
         return MaxWidth::Full;
     }
+
+    protected ?string $heading = 'Localidades';
+    protected static ?string $title = 'Localidades';
+
 }

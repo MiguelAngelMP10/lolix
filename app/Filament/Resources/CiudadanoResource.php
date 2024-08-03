@@ -8,6 +8,7 @@ use App\Models\Ciudadano;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,6 +19,14 @@ class CiudadanoResource extends Resource
     protected static ?string $model = Ciudadano::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationBadgeTooltip = 'El número de ciudadanos';
+
+
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -67,17 +76,28 @@ class CiudadanoResource extends Resource
 
 
                 Forms\Components\Select::make('padre_id')
-                    ->relationship('padre', 'nombre')
+                    ->relationship(
+                        name: 'madre',
+                        titleAttribute: 'nombre',
+                        modifyQueryUsing: function ($query) {
+                            $query->where('sexo', 'M');
+                        })
                     ->searchable()
                     ->preload()
                     ->getOptionLabelFromRecordUsing(fn($record) => "{$record->nombre} {$record->apellido_paterno} {$record->apellido_materno}")
                     ->default(null),
                 Forms\Components\Select::make('madre_id')
-                    ->relationship('madre', 'nombre')
+                    ->relationship(
+                        name: 'madre',
+                        titleAttribute: 'nombre',
+                        modifyQueryUsing: function ($query) {
+                            $query->where('sexo', 'F');
+                        })
                     ->searchable()
                     ->preload()
                     ->getOptionLabelFromRecordUsing(fn($record) => "{$record->nombre} {$record->apellido_paterno} {$record->apellido_materno}")
-                    ->default(null),
+                    ->default(null)
+
             ])->columns(4);
     }
 
@@ -122,7 +142,9 @@ class CiudadanoResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
