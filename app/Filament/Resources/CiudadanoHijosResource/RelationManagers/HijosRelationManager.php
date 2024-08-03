@@ -129,7 +129,7 @@ class HijosRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->slideOver(),
