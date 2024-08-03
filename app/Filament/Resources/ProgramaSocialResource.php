@@ -19,7 +19,7 @@ class ProgramaSocialResource extends Resource
 {
     protected static ?string $model = ProgramaSocial::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-trending-up';
     protected static ?string $navigationLabel = 'Programas Sociales';
     protected static ?string $navigationBadgeTooltip = 'El número de programas sociales';
     protected static ?string $slug = "programas-sociales";

@@ -19,7 +19,7 @@ class LocalidadResource extends Resource
 {
     protected static ?string $model = Localidad::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-map-pin';
     protected static ?string $navigationLabel = 'Localidades';
     protected static ?string $navigationBadgeTooltip = 'El número de localidades';
     protected static ?string $slug = "localidades";
