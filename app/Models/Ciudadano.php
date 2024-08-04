@@ -14,9 +14,19 @@ class Ciudadano extends Model
 
     protected $fillable = [
         'nombre', 'apellido_paterno', 'apellido_materno', 'fecha_nacimiento', 'edad', 'curp', 'direccion', 'trabajos_sociales', 'sexo', 'padre_id', 'madre_id',
-        'localidad_id',
+        'localidad_id', 'telefonos', 'redes_sociales'
 
     ];
+
+    public function getTelefonosAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    public function getRedesSocialesAttribute($value)
+    {
+        return json_decode($value, true);
+    }
 
     public function padre(): BelongsTo
     {
@@ -45,5 +55,10 @@ class Ciudadano extends Model
     public function programasSociales(): BelongsToMany
     {
         return $this->belongsToMany(ProgramaSocial::class, 'ciudadano_programa_social');
+    }
+
+    public function partidosPoliticos(): BelongsToMany
+    {
+        return $this->belongsToMany(PartidoPolitico::class, 'ciudadano_partidos_politicos');
     }
 }

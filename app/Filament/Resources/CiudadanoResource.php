@@ -6,6 +6,7 @@ use App\Filament\Resources\CiudadanoHijosResource\RelationManagers\HijosRelation
 use App\Filament\Resources\CiudadanoResource\Pages;
 use App\Filament\Resources\CiudadanoResource\RelationManagers;
 use App\Models\Ciudadano;
+use App\Models\RedSocial;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,7 +24,6 @@ class CiudadanoResource extends Resource
     protected static ?string $navigationBadgeTooltip = 'El número de ciudadanos';
 
 
-
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
@@ -33,71 +33,130 @@ class CiudadanoResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nombre')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('apellido_paterno')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('apellido_materno')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Datos personales')
+                    ->icon('heroicon-m-identification')
+                    ->schema([
 
-                Forms\Components\DatePicker::make('fecha_nacimiento')
-                    ->required(),
+                        Forms\Components\TextInput::make('nombre')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('apellido_paterno')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('apellido_materno')
+                            ->required()
+                            ->maxLength(255),
 
-                Forms\Components\TextInput::make('edad')
-                    ->numeric()
-                    ->required()
-                    ->maxLength(5),
-                Forms\Components\Select::make('sexo')
-                    ->options([
-                        'M' => 'Masculino',
-                        'F' => 'Femenino',
+                        Forms\Components\DatePicker::make('fecha_nacimiento')
+                            ->required(),
+
+                        Forms\Components\TextInput::make('edad')
+                            ->numeric()
+                            ->required()
+                            ->maxLength(5),
+                        Forms\Components\Select::make('sexo')
+                            ->options([
+                                'M' => 'Masculino',
+                                'F' => 'Femenino',
+                            ])
+                            ->required(),
+                        Forms\Components\TextInput::make('curp')
+                            ->required()
+                            ->maxLength(255),
+
+                        Forms\Components\Select::make('programasSociales')
+                            ->multiple()
+                            ->preload()
+                            ->relationship('programasSociales', 'nombre')
+                            ->required(),
+
+                        Forms\Components\Select::make('partidosPoliticos')
+                            ->label('Preferencia electoral')
+                            ->multiple()
+                            ->preload()
+                            ->relationship('partidosPoliticos', 'nombre')
+                            ->required(),
                     ])
-                    ->required(),
-                Forms\Components\TextInput::make('curp')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('localidad_id')
-                    ->relationship('localidad', 'nombre')
-                    ->searchable()
-                    ->preload()
-                    ->required()
-                    ->default(null),
-                Forms\Components\Textarea::make('direccion')
-                    ->required()
-                    ->columnSpanFull(),
+                    ->columns(3)
+                    ->collapsed(false),
 
-                Forms\Components\Select::make('programasSociales')
-                    ->multiple()
-                    ->preload()
-                    ->relationship('programasSociales', 'nombre')
-                    ->required(),
+                Forms\Components\Section::make('Domicilio')
+                    ->icon('heroicon-m-map-pin')
+                    ->schema([
 
+                        Forms\Components\Select::make('localidad_id')
+                            ->relationship('localidad', 'nombre')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->default(null),
+                        Forms\Components\Textarea::make('direccion')
+                            ->required()
+                    ])
+                    ->columns(2)
+                    ->collapsed(false),
 
-                Forms\Components\Select::make('padre_id')
-                    ->relationship(
-                        name: 'padre',
-                        titleAttribute: 'nombre',
-                        modifyQueryUsing: function ($query) {
-                            $query->where('sexo', 'M');
-                        })
-                    ->searchable()
-                    ->preload()
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->nombre} {$record->apellido_paterno} {$record->apellido_materno}")
-                    ->default(null),
-                Forms\Components\Select::make('madre_id')
-                    ->relationship(
-                        name: 'madre',
-                        titleAttribute: 'nombre',
-                        modifyQueryUsing: function ($query) {
-                            $query->where('sexo', 'F');
-                        })
-                    ->searchable()
-                    ->preload()
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->nombre} {$record->apellido_paterno} {$record->apellido_materno}")
-                    ->default(null)
+                Forms\Components\Section::make('Padres')
+                    ->icon('heroicon-m-user-group')
+                    ->schema([
+                        Forms\Components\Select::make('padre_id')
+                            ->relationship(
+                                name: 'padre',
+                                titleAttribute: 'nombre',
+                                modifyQueryUsing: function ($query) {
+                                    $query->where('sexo', 'M');
+                                })
+                            ->searchable()
+                            ->preload()
+                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->nombre} {$record->apellido_paterno} {$record->apellido_materno}")
+                            ->default(null),
+                        Forms\Components\Select::make('madre_id')
+                            ->relationship(
+                                name: 'madre',
+                                titleAttribute: 'nombre',
+                                modifyQueryUsing: function ($query) {
+                                    $query->where('sexo', 'F');
+                                })
+                            ->searchable()
+                            ->preload()
+                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->nombre} {$record->apellido_paterno} {$record->apellido_materno}")
+                            ->default(null),
+                    ])
+                    ->columns(2)
+                    ->collapsed(false),
+
+                Forms\Components\Section::make('Medios de contacto')
+                    ->icon('heroicon-m-megaphone')
+                    ->schema([
+                        Forms\Components\Repeater::make('telefonos')
+                            ->schema([
+                                Forms\Components\Select::make('tipo_telefono')
+                                    ->options([
+                                        'fijo' => 'Fijo',
+                                        'movil' => 'Movil',
+                                    ])
+                                    ->required(),
+                                Forms\Components\TextInput::make('telefono')->required()->tel(),
+                            ])
+                            ->reorderable(false)
+                            ->minItems(1)
+                            ->columns(2),
+
+                        Forms\Components\Repeater::make('redes_sociales')
+                            ->schema([
+                                Forms\Components\Select::make('red_social')
+                                    ->options(RedSocial::all()->pluck('nombre', 'id'))
+                                    ->required(),
+                                Forms\Components\TextInput::make('nombre')->required(),
+                            ])
+                            ->reorderable(false)
+                            ->minItems(1)
+                            ->columns(2)
+                            ->required()
+                    ])
+                    ->columns(2)
+                    ->collapsed(false),
+
 
             ])->columns(4);
     }
