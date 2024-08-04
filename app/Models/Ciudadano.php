@@ -18,6 +18,16 @@ class Ciudadano extends Model
 
     ];
 
+    public function setTelefonosAttribute($value)
+    {
+        $this->attributes['telefonos'] = is_array($value) ? json_encode($value) : $value;
+    }
+
+    public function setRedesSocialesAttribute($value)
+    {
+        $this->attributes['redes_sociales'] = is_array($value) ? json_encode($value) : $value;
+    }
+
     public function getTelefonosAttribute($value)
     {
         return json_decode($value, true);
