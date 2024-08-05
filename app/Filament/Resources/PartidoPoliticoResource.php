@@ -69,7 +69,7 @@ class PartidoPoliticoResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\CiudadanosRelationManager::class
         ];
     }
 
